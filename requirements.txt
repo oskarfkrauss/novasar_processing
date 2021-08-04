@@ -1,1 +1,2 @@
 sedas_pyapi
+pysatc[validation]==1.0.0

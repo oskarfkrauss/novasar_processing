@@ -62,7 +62,7 @@ end_date = '2021-07-01T09:43:45Z'
 # search for relevant results and initilialise downlaod
 
 result_sar = sedas.search_sar(wkt, start_date, end_date, source_group="NovaSAR")
-# print(json.dumps(result_sar, sort_keys=True, indent=4, separators=(',', ': '))[4])
+print(json.dumps(result_sar, sort_keys=True, indent=4, separators=(',', ': '))[4])
 
 downloader = SeDASBulkDownload(sedas, '', parallel=3)
 
