@@ -456,7 +456,7 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Make land mask 
   
-e = ENVI()
+e = ENVI(HEADLESS=1)
 dem1 = dem + '.hdr'
 ; Open an input file
 Raster = e.OpenRaster(dem1)
@@ -510,6 +510,8 @@ ClasstoVectorTask.EXPORT_CLASSES = 'Class 5'
 land = dem + '_land.shp'
 ClassToVectorTask.OUTPUT_VECTOR_URI = land
 ClassToVectorTask.Execute
+
+print, 'Created land.shp successfully'
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Create : Geocoding and Radiometric Calibration
