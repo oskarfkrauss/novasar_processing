@@ -454,7 +454,62 @@ if (act_step eq  4)and(act_step le end_step) then begin
 endif
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Make land mask 
+  
+e = ENVI()
+dem1 = dem + '.hdr'
+; Open an input file
+Raster = e.OpenRaster(dem1)
 
+; Get the task from the catalog of ENVITasks
+Task = ENVITask('BinaryAutomaticThresholdRaster')
+
+
+
+; Define inputs
+Task.INPUT_RASTER = Raster
+Task.METHOD = 'Otsu'
+dem2 = dem + '_class.dat'
+Task.OUTPUT_RASTER_URI = dem2
+
+
+
+; Run the task
+Task.Execute
+
+; Open an input file
+Raster = e.OpenRaster(dem2)
+
+
+
+; Create a classification ENVIRaster
+ClassTask = ENVITask('ISODATAClassification')
+ClassTask.INPUT_RASTER = Raster
+ClassTask.Execute
+
+
+
+; Run the smoothing task
+SmoothTask = ENVITask('ClassificationSmoothing')
+SmoothTask.INPUT_RASTER = ClassTask.OUTPUT_RASTER
+SmoothTask.Execute
+
+
+
+; Run the aggregation task
+AggregationTask = ENVITask('ClassificationAggregation')
+AggregationTask.INPUT_RASTER = SmoothTask.OUTPUT_RASTER
+AggregationTask.Execute
+
+
+
+; Convert the classes to shapefiles
+ClassToVectorTask = ENVITask('ClassificationToShapefile')
+ClassToVectorTask.INPUT_RASTER = AggregationTask.OUTPUT_RASTER
+ClasstoVectorTask.EXPORT_CLASSES = 'Class 5'
+land = dem + '_land.shp'
+ClassToVectorTask.OUTPUT_VECTOR_URI = land
+ClassToVectorTask.Execute
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Create : Geocoding and Radiometric Calibration
@@ -647,8 +702,7 @@ if (act_step eq  6)and(act_step le end_step) then begin
    OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.MINIMUM_MEAN_SIGMA0_DB' , '-2.0000000'
    OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.MINIMUM_SHIP_PIXELS' , '2.0000000'
    OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.GENERATE_KML_FLAG' , 'OK'
-   Land = 'C:/Users/Oskar.Fraserkrauss/Documents/novasar_processing/Land/ne_10m_land.shp'
-   OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.LAND_MASK_SHAPE_FILE_NAME' , Land
+   OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.LAND_MASK_SHAPE_FILE_NAME' , land
    OB->SetParam , 'MAIN_BASIC_FE_SHIP_DETECTION_CMD.LAND_MASK_BUFFER_METER' , '500.0000'
 
    ; Verify the parameters
