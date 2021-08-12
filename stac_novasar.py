@@ -92,6 +92,10 @@ def get_geom_and_bbox(polygon):
     
     return bbox, {'type': 'Polygon', 'coordinates': footprint}
 
+singleProduct = sedas.search_product(scene_names[0])
+    
+bbox, geom = get_geom_and_bbox(singleProduct[0]['coordinatesWKT'])
+
 def novasar_get_dt(scene_name):
     return datetime.strptime('_'.join(scene_name.split('_')[5:7]), '%y%m%d_%H%M%S')
 

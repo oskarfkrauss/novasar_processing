@@ -7,6 +7,7 @@
 ;; @return 1 if all the steps are sucess , 0 otherwise
 ;;;
 function  IDLSCRIPT_TEST, $
+     scene_name,$
      workdir,$
      temp_dir,$
      BATCH_FILE_INPUT=batch_file_input,$
@@ -53,27 +54,24 @@ function  IDLSCRIPT_TEST, $
 
 ; workdir='C:/Users/Oskar.Fraserkrauss/Documents/novasar_processing'
 
+TIC
+
 CD, workdir
-result = FILE_BASENAME(FILE_SEARCH(workdir + '/input/NovaSAR_01*'))
-res_sz = N_ELEMENTS(result)
+result = scene_name
+;res_sz = N_ELEMENTS(result)
 
 print, result
 
-FOR I=0, res_sz-1 DO BEGIN
+CD, workdir + '/output'
+FILE_MKDIR, result
 
-  TIC
+img_dir=workdir +'/input/'+result
+CD, img_dir
 
-  CD, workdir + '/output'
-  FILE_MKDIR, result[I]
-  
-  img_dir=workdir +'/input/'+result[I]
-  CD, img_dir
-  
-  act_step = 1
-  print, I
-  image1 = img_dir+'/metadata.xml'
-  
-  output = workdir + '/output'
+act_step = 1
+image1 = img_dir+'/metadata.xml'
+
+output = workdir + '/output'
 
 if (act_step eq  1)and(act_step le end_step) then begin
 
@@ -82,7 +80,6 @@ if (act_step eq  1)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -114,7 +111,7 @@ if (act_step eq  1)and(act_step le end_step) then begin
    temp_value = [temp_value, image1]
    OB->SetParam , 'MAIN_BASIC_IMPORT_NOVASAR.INPUT_FILE_LIST' , temp_value
    temp_value = []
-   output1 = output +'/'+ result[I] + '/' + result[I]
+   output1 = output +'/'+ result + '/' + result
    temp_value = [temp_value, output1]
    OB->SetParam , 'MAIN_BASIC_IMPORT_NOVASAR.OUTPUT_FILE_LIST' , temp_value
    OB->SetParam , 'MAIN_BASIC_IMPORT_NOVASAR.APPLY_CALIBRATION_CONSTANT_FLAG' , 'NotOK'
@@ -123,7 +120,6 @@ if (act_step eq  1)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
       
@@ -141,7 +137,6 @@ if (act_step eq  1)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
         SARscape_Batch_Exit
-        continue
         RETURN, 0
       ENDELSE
    endelse
@@ -164,7 +159,6 @@ if (act_step eq  2)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -215,7 +209,6 @@ if (act_step eq  2)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -231,7 +224,6 @@ if (act_step eq  2)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('NotOK',ERROR_CODE=aErrCode)
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
-         continue
         SARscape_Batch_Exit
         RETURN, 0
       ENDELSE
@@ -255,7 +247,6 @@ if (act_step eq  3)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -303,7 +294,6 @@ if (act_step eq  3)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -319,7 +309,6 @@ if (act_step eq  3)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('NotOK',ERROR_CODE=aErrCode)
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
-         continue
         SARscape_Batch_Exit
         RETURN, 0
       ENDELSE
@@ -343,7 +332,6 @@ if (act_step eq  4)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -429,7 +417,6 @@ if (act_step eq  4)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -445,7 +432,6 @@ if (act_step eq  4)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('NotOK',ERROR_CODE=aErrCode)
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
-         continue
         SARscape_Batch_Exit
         RETURN, 0
       ENDELSE
@@ -526,7 +512,6 @@ if (act_step eq  5)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -622,7 +607,6 @@ if (act_step eq  5)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -638,7 +622,6 @@ if (act_step eq  5)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('NotOK',ERROR_CODE=aErrCode)
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
-         continue
         SARscape_Batch_Exit
         RETURN, 0
       ENDELSE
@@ -662,7 +645,6 @@ if (act_step eq  6)and(act_step le end_step) then begin
    OB = obj_new('SARscapeBatch',Module=module_to_call)
    IF (~OBJ_VALID(OB)) THEN BEGIN
       print, 'Create object fail : '+module_to_call
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -711,7 +693,6 @@ if (act_step eq  6)and(act_step le end_step) then begin
    ok = OB->VerifyParams(Silent=0)
    IF ~ok THEN BEGIN
       print, 'Module can not be executed; Some parameters need to be filled  ['+module_to_call+'] FAIL!'
-      continue
       SARscape_Batch_Exit
       RETURN, 0
    ENDIF
@@ -727,21 +708,18 @@ if (act_step eq  6)and(act_step le end_step) then begin
          aOutMsg = get_SARscape_error_string('NotOK',ERROR_CODE=aErrCode)
          aOutMsg = get_SARscape_error_string('OK',ERROR_CODE=aErrCode)
          print, 'FAIL Execution ['+module_to_call+'] EC ['+aErrCode+'] : ['+aOutMsg+']'
-         continue
         SARscape_Batch_Exit
         RETURN, 0
       ENDELSE
    endelse
    act_step = (act_step+1);
 endif
-
-  TOC
-
-ENDFOR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
    return, 1
+
+TOC
 
 end
 
